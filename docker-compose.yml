@@ -1,0 +1,32 @@
+
+services:
+  app:
+    build: .
+    container_name: babinski-app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+      - ./vendor:/var/www/html/vendor
+      - ./node_modules:/var/www/html/node_modules
+      - ./storage:/var/www/html/storage
+    networks:
+      - babinski
+
+  web:
+    image: nginx:1.25-alpine
+    container_name: babinski-nginx
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - ./:/var/www/html
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
+    networks:
+      - babinski
+
+networks:
+  babinski:
+    driver: bridge
