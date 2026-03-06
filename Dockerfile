@@ -9,12 +9,7 @@ FROM node:20 AS node_modules
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm install --no-audit --no-fund
-RUN php artisan key:generate
-RUN php artisan config:cache
-RUN php artisan route:cache
-RUN php artisan view:cache
-RUN php artisan storage:link
-RUN php artisan migrate --force
+
 FROM php:8.4-fpm-alpine
 
 # Install system dependencies
