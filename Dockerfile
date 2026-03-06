@@ -9,7 +9,12 @@ FROM node:20 AS node_modules
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm install --no-audit --no-fund
-
+RUN php artisan key:generate
+RUN php artisan config:cache
+RUN php artisan route:cache
+RUN php artisan view:cache
+RUN php artisan storage:link
+RUN php artisan migrate --force
 FROM php:8.4-fpm-alpine
 
 # Install system dependencies
@@ -44,7 +49,6 @@ COPY --from=node_modules /app/node_modules /var/www/html/node_modules
 
 # Build frontend assets
 RUN npm run build || npm run prod || true
-
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
